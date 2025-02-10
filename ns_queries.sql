@@ -36,7 +36,7 @@ SELECT
     CONCAT(
         FLOOR(SUM(duration_minutes) / 1440), ' days ', 
         FLOOR(SUM(duration_minutes) % 1440/60), ' hours'
-    ) AS tototal_duration  -- Format the average duration as hours and minutess
+    ) AS total_duration  
 FROM `ns 2022`
 GROUP BY ns_lines 
 ORDER BY total_disruptions DESC 
