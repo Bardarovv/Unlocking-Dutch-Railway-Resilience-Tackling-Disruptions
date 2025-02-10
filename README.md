@@ -22,28 +22,77 @@ This analysis was conducted using MySQL for data extraction and Power BI for vis
 #	SQL Queries
 The following SQL queries were used to extract and aggregate data from the database:
 ##	SQL Query for Identifying Main causes for disruption:
-
-
-
-
-
+```sql
+SELECT 
+    cause_group, 
+    COUNT(*) AS total_disruptions
+FROM `ns 2022`
+GROUP BY cause_group
+ORDER BY total_disruptions DESC; 
+````
+![image](https://github.com/user-attachments/assets/a6aa747c-4bef-48ef-a6ac-4b2b0461f06f)
 
 ##	SQL Query for Identifying Disruptions per weekday
- 
- 
-##	SQL Query for Identifying Number of Disruptions and Total duration of all disruptions – measured in hours.
- 
- 
-##	SQL Query for Identifying Top 10 lines with Disruptions and Total duration 
+ ```sql
+SELECT 
+    DATE_FORMAT(STR_TO_DATE(start_time, '%d-%m-%y %H:%i'), '%W') AS weekday,
+    COUNT(*) AS total_disruptions
+FROM `ns 2022`
+GROUP BY weekday
+ORDER BY FIELD(weekday, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+````
+![image](https://github.com/user-attachments/assets/1296f48b-ee1f-467d-acfd-7560cba9eb00)
 
- 
- 
+##	SQL Query for Identifying Number of Disruptions and Total duration of all disruptions – measured in hours
+ ```sql
+SELECT 
+    DATE_FORMAT(STR_TO_DATE(start_time, '%d-%m-%y %H:%i'), '%M') AS month_name,  -- Get full month name
+    COUNT(*) AS total_disruptions,
+    ROUND(SUM(duration_minutes) / 60) AS total_duration_hours  -- Convert duration to hours and round it
+FROM `ns 2022`
+WHERE STR_TO_DATE(start_time, '%d-%m-%y %H:%i') BETWEEN '2022-01-01' AND '2022-12-31'
+GROUP BY month_name
+ORDER BY FIELD(month_name, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+````
+![image](https://github.com/user-attachments/assets/a7c3c0ea-f765-4cb1-973d-4b25e4760a7c)
+
+##	SQL Query for Identifying Top 10 lines with Disruptions and Total duration 
+```sql
+ SELECT 
+    ns_lines,  
+    COUNT(*) AS total_disruptions,  
+    CONCAT(
+        FLOOR(SUM(duration_minutes) / 1440), ' days ', -- 1 day = 1400 minutes
+        FLOOR(SUM(duration_minutes) % 1440/60), ' hours'
+    ) AS total_duration  
+FROM `ns 2022`
+GROUP BY ns_lines 
+ORDER BY total_disruptions DESC 
+LIMIT 10; 
+ ````
+![image](https://github.com/user-attachments/assets/59e70457-fbf9-4b5f-9398-63363ed5f381)
+
 ##	SQL Query for Identifying Top 10 lines disruption causes with avg. diration in hour and minutes
-   
+```sql
+SELECT 
+    cause_en AS disruption_cause,  
+    COUNT(*) AS total_disruptions,  
+    CONCAT(
+        FLOOR(AVG(duration_minutes) / 60), ' hour(s) ', 
+        FLOOR(AVG(duration_minutes) % 60), ' minute(s)'
+    ) AS avg_duration  -- Format the average duration as hours and minutess
+FROM `ns 2022`
+GROUP BY cause_en  
+ORDER BY total_disruptions DESC 
+LIMIT 10;
+````
+![image](https://github.com/user-attachments/assets/d6d45548-ee0f-4bc3-9e61-448b3dc1e50d)
+
 #	Findings
 Frequent Disruptions: Broken down trains were the most frequent cause, but generally had shorter disruptions.
 Longer Disruptions: Infrastructure issues like damaged overhead wires and logistical limitations caused longer delays.
 Weekly Disruption Trends: The start of the week sees more disruptions, possibly due to increased traffic or post-weekend maintenance.
+
  ![image](https://github.com/user-attachments/assets/a49e513f-7117-47ad-a6d7-78f143211cef)
  
 Top Disrupted Lines: Rotterdam-Breda and  Amsterdam-Schiphol-Rotterdam had the most frequent disruptions, while Hengelo-Bielefeld had the longest disruption durations.
