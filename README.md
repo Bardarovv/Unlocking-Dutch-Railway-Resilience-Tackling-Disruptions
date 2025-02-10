@@ -10,10 +10,10 @@ This analysis aims to:
 -	Evaluate which train lines are most susceptible to disruptions.
 -	Generate actionable insights and propose recommendations to reduce the frequency and severity of disruptions, thereby improving operational efficiency and customer satisfaction.
 #	Data Overview
--	Data Source: NS disruption data for the year 2022
+-	Data Source: NS disruption data for the year 2022.
 -	Data Volume: The dataset contains 5484 disruption records for the year 2022.
 -	Key Metrics:
-rdt_id,  ns_lines, rdt_lines, rdt_lines_id, rdt_station_names, rdt_station_codes, cause_nl, cause_en, statistical_cause_nl, statistical_cause_en, cause_groupstart_time, end_time, duration_minutes
+rdt_id,  ns_lines, rdt_lines, rdt_lines_id, rdt_station_names, rdt_station_codes, cause_nl, cause_en, statistical_cause_nl, statistical_cause_en, cause_groupstart_time, end_time, duration_minutes.
 
 # Methodology
 This analysis was conducted using MySQL for data extraction and Power BI for visualization.
